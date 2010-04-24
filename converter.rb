@@ -3,6 +3,10 @@ require 'sinatra'
 require 'json'
 require 'vpim'
 
+get '/' do
+  "Ask and you shall receive. GET to /vcard?query or /vevent?query"
+end
+
 # /vcard?query=encoded_string
 get '/vcard' do
   json = JSON.parse(URI.decode(params[:query]))
