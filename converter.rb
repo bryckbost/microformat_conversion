@@ -31,8 +31,9 @@ get '/vcard' do
     maker.add_email(json["email"].first)
   end
   
-  content_type 'text/x-vcard'
-  send_data card, :filename => 'contact.vcf'
+  content_type "text/x-vcard"
+  attachment "#{json["fn"].downcase.sub(' ', '_')}.vcf"
+  card.to_s
 end
 
 get '/vevent' do
