@@ -19,17 +19,16 @@ get '/vcard' do
     end
 
     maker.add_addr do |addr|
-      addr.preferred = true
-      addr.street = json["adr"]["street-address"]
-      addr.locality = json["adr"]["locality"]
-      addr.region = json["adr"]["region"]
-      addr.postalcode = json["adr"]["postal-code"]
-      addr.country = json["adr"]["country-name"]
+      addr.street = json["adr"][0]["street-address"]
+      addr.locality = json["adr"][0]["locality"]
+      addr.region = json["adr"][0]["region"]
+      addr.postalcode = json["adr"][0]["postal-code"]
+      addr.country = json["adr"][0]["country-name"]
     end
     
-    maker.add_tel(json["tel"])
+    maker.add_tel(json["tel"].first)
     
-    maker.add_email(json["email"])
+    maker.add_email(json["email"].first)
   end
   
   content_type 'text/x-vcard'
