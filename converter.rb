@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-require 'JSON'
+require 'json'
 require 'vpim'
 
 # /vcard?query=encoded_string
