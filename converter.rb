@@ -22,16 +22,20 @@ get '/vcard' do
       name.fullname = json["fn"]
     end
 
-    maker.add_addr do |addr|
-      addr.street = json["adr"][0]["street-address"]
-      addr.locality = json["adr"][0]["locality"]
-      addr.region = json["adr"][0]["region"]
-      addr.postalcode = json["adr"][0]["postal-code"]
-      addr.country = json["adr"][0]["country-name"]
+    unless json["adr"].nil? || json["adr"].empty?
+      json["adr"].each do |address|
+        maker.add_addr do |addr|
+          addr.street = address["street-address"] unless address["street-address"].nil?
+          addr.locality = address["locality"] unless address["locality"].nil?
+          addr.region = address["region"] unless address["region"].nil?
+          addr.postalcode = address["postal-code"] unless address["postal-code"].nil?
+          addr.country = address["country-name"] unless address["country-name"].nil?
+        end
+      end
     end
     
-    maker.add_tel(json["tel"].first)
-    maker.add_email(json["email"].first)
+    maker.add_tel(json["tel"].first) unless json["tel"].nil?
+    maker.add_email(json["email"].first) unless json["email"].nil?
   end
   
   content_type "text/x-vcard"
