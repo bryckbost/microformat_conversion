@@ -1,17 +1,17 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
-require 'vpim'
+require 'vpim/vcard'
+require 'ri_cal'
 
 get '/' do
-  "Ask and you shall receive. GET to /vcard?query or /vevent?query"
+  "GET to /vcard?query or /vevent?query"
 end
 
 # /vcard?query=encoded_string
 get '/vcard' do
   json = JSON.parse(URI.decode(params[:query]))
   
-  # do vcard conversion here
   card = Vpim::Vcard::Maker.make2 do |maker|
     maker.add_name do |name|
       name.prefix = json["n"]["prefix"] unless json["n"]["prefix"].nil?
@@ -31,15 +31,28 @@ get '/vcard' do
     end
     
     maker.add_tel(json["tel"].first)
-    
     maker.add_email(json["email"].first)
   end
   
   content_type "text/x-vcard"
-  attachment "#{json["fn"].downcase.sub(' ', '_')}.vcf"
+  attachment "#{json["fn"].downcase.gsub(' ', '_')}.vcf"
   card.to_s
 end
 
+#/vevent?query=encoded_string
 get '/vevent' do
-  # do vevent conversion here  
+  json = JSON.parse(URI.decode(params[:query]))
+  
+  content_type "text/calendar"
+  attachment "#{json["summary"].downcase.gsub(' ', '_')}.ics"
+  RiCal.Calendar do
+    event do
+      summary     json["summary"] unless json["summary"].nil?
+      description json["description"] unless json["description"].nil?
+      dtstart     DateTime.parse(json["dtstart"]) unless json["dtstart"].nil?
+      dtend       DateTime.parse(json["dtend"]) unless json["dtend"].nil?
+      location    json["location"] unless json["location"].nil?
+      url         json["url"] unless json["url"].nil?
+    end
+  end.to_s
 end
