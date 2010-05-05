@@ -3,6 +3,10 @@ require 'sinatra'
 require 'json'
 require 'vpim/vcard'
 require 'ri_cal'
+require 'exceptional'
+use Rack::Exceptional, 3d835e1522350c2bc0629f95863fc8a030a8db97
+
+set :raise_errors, true
 
 get '/' do
   "GET to /vcard?query or /vevent?query"
