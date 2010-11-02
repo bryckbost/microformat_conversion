@@ -11,14 +11,16 @@ end
 # /vcard?query=encoded_string
 get '/vcard' do
   json = JSON.parse(URI.decode(params[:query]))
-  
+
   card = Vpim::Vcard::Maker.make2 do |maker|
     maker.add_name do |name|
-      name.prefix = json["n"]["prefix"] unless json["n"]["prefix"].nil?
-      name.given = json["n"]["givenName"] unless json["n"]["givenName"].nil?
-      name.family = json["n"]["familyName"] unless json["n"]["familyName"].nil?
-      name.suffix = json["n"]["suffix"] unless json["n"]["suffix"].nil?
-      name.additional = json["n"]["additional"] unless json["n"]["additional"].nil?
+      if json["n"]
+        name.prefix = json["n"]["prefix"] unless json["n"]["prefix"].nil?
+        name.given = json["n"]["givenName"] unless json["n"]["givenName"].nil?
+        name.family = json["n"]["familyName"] unless json["n"]["familyName"].nil?
+        name.suffix = json["n"]["suffix"] unless json["n"]["suffix"].nil?
+        name.additional = json["n"]["additional"] unless json["n"]["additional"].nil?
+      end
       name.fullname = json["fn"]
     end
 
@@ -33,11 +35,11 @@ get '/vcard' do
         end
       end
     end
-    
+
     maker.add_tel(json["tel"].first) unless json["tel"].nil?
     maker.add_email(json["email"].first) unless json["email"].nil?
   end
-  
+
   content_type "text/x-vcard"
   attachment "#{json["fn"].downcase.gsub(' ', '_')}.vcf"
   card.to_s
@@ -46,7 +48,7 @@ end
 #/vevent?query=encoded_string
 get '/vevent' do
   json = JSON.parse(URI.decode(params[:query]))
-  
+
   content_type "text/calendar"
   attachment "#{json["summary"].downcase.gsub(' ', '_')}.ics"
   RiCal.Calendar do
