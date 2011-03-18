@@ -16,8 +16,8 @@ get '/vcard' do
     maker.add_name do |name|
       if json["n"]
         name.prefix = json["n"]["prefix"] unless json["n"]["prefix"].nil?
-        name.given = json["n"]["givenName"] unless json["n"]["givenName"].nil?
-        name.family = json["n"]["familyName"] unless json["n"]["familyName"].nil?
+        name.given = json["n"]["given-name"][0] unless json["n"]["given-name"].nil?
+        name.family = json["n"]["family-name"][0] unless json["n"]["family-name"].nil?
         name.suffix = json["n"]["suffix"] unless json["n"]["suffix"].nil?
         name.additional = json["n"]["additional"] unless json["n"]["additional"].nil?
       end
@@ -36,8 +36,8 @@ get '/vcard' do
       end
     end
 
-    maker.add_tel(json["tel"].first) unless json["tel"].nil?
-    maker.add_email(json["email"].first) unless json["email"].nil?
+    maker.add_tel(json["tel"][0]["value"]) unless json["tel"].nil?
+    maker.add_email(json["email"][0]["value"]) unless json["email"].nil?
   end
 
   content_type "text/x-vcard"
